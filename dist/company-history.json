@@ -1,0 +1,495 @@
+{
+  "RELIANCE.NS": {
+    "source": "https://companiesmarketcap.com/reliance-industries/marketcap/",
+    "asOf": "2026-10-30",
+    "metric": "cap",
+    "points": [
+      {
+        "year": 2026,
+        "value": 167.26,
+        "change": -28.79
+      },
+      {
+        "year": 2025,
+        "value": 234.89,
+        "change": 21.39
+      },
+      {
+        "year": 2024,
+        "value": 193.5,
+        "change": -7.98
+      },
+      {
+        "year": 2023,
+        "value": 210.29,
+        "change": 0.96
+      },
+      {
+        "year": 2022,
+        "value": 208.29,
+        "change": -3.24
+      },
+      {
+        "year": 2021,
+        "value": 215.27,
+        "change": 17.27
+      },
+      {
+        "year": 2020,
+        "value": 183.56,
+        "change": 36.39
+      },
+      {
+        "year": 2019,
+        "value": 134.59,
+        "change": 32.42
+      },
+      {
+        "year": 2018,
+        "value": 101.64,
+        "change": 11.62
+      },
+      {
+        "year": 2017,
+        "value": 91.05,
+        "change": 93.86
+      },
+      {
+        "year": 2016,
+        "value": 46.97,
+        "change": -5
+      },
+      {
+        "year": 2015,
+        "value": 49.44,
+        "change": 8.69
+      },
+      {
+        "year": 2014,
+        "value": 45.48,
+        "change": 6.91
+      },
+      {
+        "year": 2013,
+        "value": 42.54,
+        "change": -15.17
+      },
+      {
+        "year": 2012,
+        "value": 50.15,
+        "change": 28.69
+      },
+      {
+        "year": 2011,
+        "value": 38.97,
+        "change": -44.61
+      },
+      {
+        "year": 2010,
+        "value": 70.35,
+        "change": -4.89
+      },
+      {
+        "year": 2009,
+        "value": 73.97,
+        "change": 98.43
+      },
+      {
+        "year": 2008,
+        "value": 37.28,
+        "change": -63.58
+      },
+      {
+        "year": 2007,
+        "value": 102.35,
+        "change": 154.69
+      },
+      {
+        "year": 2006,
+        "value": 40.18,
+        "change": null
+      }
+    ]
+  },
+  "HDB": {
+    "source": "https://companiesmarketcap.com/hdfc-bank/marketcap/",
+    "asOf": "2026-10-30",
+    "metric": "cap",
+    "points": [
+      {
+        "year": 2026,
+        "value": 109.84,
+        "change": -41.25
+      },
+      {
+        "year": 2025,
+        "value": 186.97,
+        "change": 13.54
+      },
+      {
+        "year": 2024,
+        "value": 164.68,
+        "change": -3.03
+      },
+      {
+        "year": 2023,
+        "value": 169.83,
+        "change": 33.55
+      },
+      {
+        "year": 2022,
+        "value": 127.16,
+        "change": 15.44
+      },
+      {
+        "year": 2021,
+        "value": 110.16,
+        "change": 2.28
+      },
+      {
+        "year": 2020,
+        "value": 107.7,
+        "change": 10.61
+      },
+      {
+        "year": 2019,
+        "value": 97.36,
+        "change": 18.03
+      },
+      {
+        "year": 2018,
+        "value": 82.49,
+        "change": 9.23
+      },
+      {
+        "year": 2017,
+        "value": 75.52,
+        "change": 67.1
+      },
+      {
+        "year": 2016,
+        "value": 45.19,
+        "change": 10.28
+      },
+      {
+        "year": 2015,
+        "value": 40.98,
+        "change": 13.12
+      },
+      {
+        "year": 2014,
+        "value": 36.23,
+        "change": 40.64
+      },
+      {
+        "year": 2013,
+        "value": 25.76,
+        "change": -11.97
+      },
+      {
+        "year": 2012,
+        "value": 29.26,
+        "change": 56.36
+      },
+      {
+        "year": 2011,
+        "value": 18.71,
+        "change": -22.96
+      },
+      {
+        "year": 2010,
+        "value": 24.29,
+        "change": 55.26
+      },
+      {
+        "year": 2009,
+        "value": 15.64,
+        "change": 79.29
+      },
+      {
+        "year": 2008,
+        "value": 8.72,
+        "change": -37.16
+      },
+      {
+        "year": 2007,
+        "value": 13.88,
+        "change": 76.28
+      },
+      {
+        "year": 2006,
+        "value": 7.87,
+        "change": 49.85
+      },
+      {
+        "year": 2005,
+        "value": 5.25,
+        "change": 22.94
+      },
+      {
+        "year": 2004,
+        "value": 4.27,
+        "change": 50.19
+      },
+      {
+        "year": 2003,
+        "value": 2.84,
+        "change": 127.45
+      },
+      {
+        "year": 2002,
+        "value": 1.25,
+        "change": -18.96
+      },
+      {
+        "year": 2001,
+        "value": 1.54,
+        "change": null
+      }
+    ]
+  },
+  "TCS.NS": {
+    "source": "https://companiesmarketcap.com/tata-consultancy-services/marketcap/",
+    "asOf": "2026-10-30",
+    "metric": "cap",
+    "points": [
+      {
+        "year": 2026,
+        "value": 95.86,
+        "change": -27.43
+      },
+      {
+        "year": 2025,
+        "value": 132.1,
+        "change": -25.14
+      },
+      {
+        "year": 2024,
+        "value": 176.46,
+        "change": 6.93
+      },
+      {
+        "year": 2023,
+        "value": 165.02,
+        "change": 14.58
+      },
+      {
+        "year": 2022,
+        "value": 144.02,
+        "change": -22.48
+      },
+      {
+        "year": 2021,
+        "value": 185.78,
+        "change": 26.49
+      },
+      {
+        "year": 2020,
+        "value": 146.88,
+        "change": 29.13
+      },
+      {
+        "year": 2019,
+        "value": 113.74,
+        "change": 11.97
+      },
+      {
+        "year": 2018,
+        "value": 101.59,
+        "change": 25.86
+      },
+      {
+        "year": 2017,
+        "value": 80.71,
+        "change": 17.64
+      },
+      {
+        "year": 2016,
+        "value": 68.61,
+        "change": -4.47
+      },
+      {
+        "year": 2015,
+        "value": 71.82,
+        "change": -9.16
+      },
+      {
+        "year": 2014,
+        "value": 79.06,
+        "change": 14.81
+      },
+      {
+        "year": 2013,
+        "value": 68.86,
+        "change": 53.4
+      },
+      {
+        "year": 2012,
+        "value": 44.89,
+        "change": 4.74
+      },
+      {
+        "year": 2011,
+        "value": 42.86,
+        "change": -15.82
+      },
+      {
+        "year": 2010,
+        "value": 50.91,
+        "change": 60.88
+      },
+      {
+        "year": 2009,
+        "value": 31.64,
+        "change": 225.24
+      },
+      {
+        "year": 2008,
+        "value": 9.73,
+        "change": -63.78
+      },
+      {
+        "year": 2007,
+        "value": 26.86,
+        "change": -1.06
+      },
+      {
+        "year": 2006,
+        "value": 27.15,
+        "change": null
+      }
+    ]
+  },
+  "BHARTIARTL.NS": {
+    "source": "https://companiesmarketcap.com/bharti-airtel/marketcap/",
+    "asOf": "2026-10-30",
+    "metric": "cap",
+    "points": [
+      {
+        "year": 2026,
+        "value": 128.52,
+        "change": -9.97
+      },
+      {
+        "year": 2025,
+        "value": 142.75,
+        "change": 27.38
+      },
+      {
+        "year": 2024,
+        "value": 112.07,
+        "change": 53.99
+      },
+      {
+        "year": 2023,
+        "value": 72.78,
+        "change": 25.47
+      },
+      {
+        "year": 2022,
+        "value": 58,
+        "change": 7.36
+      },
+      {
+        "year": 2021,
+        "value": 54.02,
+        "change": 42.1
+      },
+      {
+        "year": 2020,
+        "value": 38.02,
+        "change": 15.95
+      },
+      {
+        "year": 2019,
+        "value": 32.79,
+        "change": 83.63
+      },
+      {
+        "year": 2018,
+        "value": 17.85,
+        "change": -45.95
+      },
+      {
+        "year": 2017,
+        "value": 33.03,
+        "change": 83.78
+      },
+      {
+        "year": 2016,
+        "value": 17.97,
+        "change": -12.17
+      },
+      {
+        "year": 2015,
+        "value": 20.46,
+        "change": -7.93
+      },
+      {
+        "year": 2014,
+        "value": 22.23,
+        "change": 4.15
+      },
+      {
+        "year": 2013,
+        "value": 21.34,
+        "change": -2.94
+      },
+      {
+        "year": 2012,
+        "value": 21.99,
+        "change": 89258.81
+      },
+      {
+        "year": 2011,
+        "value": 0.02461,
+        "change": -99.92
+      },
+      {
+        "year": 2010,
+        "value": 30.4,
+        "change": 12.69
+      },
+      {
+        "year": 2009,
+        "value": 26.98,
+        "change": -4.5
+      },
+      {
+        "year": 2008,
+        "value": 28.25,
+        "change": -41.36
+      },
+      {
+        "year": 2007,
+        "value": 48.18,
+        "change": 78.79
+      },
+      {
+        "year": 2006,
+        "value": 26.94,
+        "change": 86.18
+      },
+      {
+        "year": 2005,
+        "value": 14.47,
+        "change": 56.33
+      },
+      {
+        "year": 2004,
+        "value": 9.25,
+        "change": 116.41
+      },
+      {
+        "year": 2003,
+        "value": 4.27,
+        "change": 385.51
+      },
+      {
+        "year": 2002,
+        "value": 0.88,
+        "change": null
+      }
+    ]
+  }
+}

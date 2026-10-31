@@ -1,0 +1,12 @@
+{
+  "name": "india-stock-view",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test feed.test.mjs listings.test.mjs exchange-eod.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

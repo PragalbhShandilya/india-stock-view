@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+node_modules/
+*-preview.png
+
+.local/
+
+# Local hosting identity is not used by GitHub Pages.
+.openai/
+.DS_Store
