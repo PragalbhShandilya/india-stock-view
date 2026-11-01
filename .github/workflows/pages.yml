@@ -21,7 +21,7 @@ jobs:
       - name: Check application
         run: |
           node --check dist/app.js
-          node --test feed.test.mjs listings.test.mjs exchange-eod.test.mjs
+          node --test feed.test.mjs listings.test.mjs exchange-eod.test.mjs kite.test.mjs reference-data.test.mjs ipo-calendar.test.mjs chart-core.test.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

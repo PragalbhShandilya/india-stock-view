@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test feed.test.mjs listings.test.mjs exchange-eod.test.mjs"
+    "test": "node --test feed.test.mjs listings.test.mjs exchange-eod.test.mjs kite.test.mjs reference-data.test.mjs ipo-calendar.test.mjs chart-core.test.mjs",
+    "refresh:reference": "node reference-data.mjs"
   },
   "engines": {
     "node": ">=22"

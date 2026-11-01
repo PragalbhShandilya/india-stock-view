@@ -2,6 +2,10 @@
 
 A data-focused Indian equity website with rankings, company profiles, market maps, financial comparisons, watchlists, and interactive charts.
 
+## Documentation
+
+See [DOCUMENTATION.md](DOCUMENTATION.md) for the full project documentation, setup guides, architecture, data sources, quality register, test plan, deployment notes and next-session handoff.
+
 ## Features
 
 - NSE/BSE company directory and 100-company ranking pages
@@ -60,3 +64,16 @@ No official exchange report is bundled or automatically loaded. Automated archiv
 Financial reference data and company logo URLs: [CompaniesMarketCap](https://companiesmarketcap.com/india/largest-companies-in-india-by-market-cap/) / [CompaniesLogo](https://companieslogo.com/). Logos remain the property of their owners. FX reference: [ExchangeRate-API](https://www.exchangerate-api.com/). Instrument directories: [Upstox](https://upstox.com/developer/api-documentation/instruments/) and [Kite Connect](https://kite.trade/docs/connect/v3/market-data-and-instruments/).
 
 Publication of this code does not grant redistribution rights to third-party market data, logos, or broker services. Obtain appropriate source permissions for production use.
+
+
+### Official share counts and market caps
+
+`dist/official-shares.json` stores reviewed, dated NSE/BSE share-count records keyed by equity ISIN. Each record must include `sharesOutstanding` (a positive safe integer), `effectiveDate`, and a direct HTTPS exchange `source` URL. Add a new dated record after an allotment, cancellation, split or bonus; the latest effective record wins. Counts with future effective dates or unofficial source domains are rejected. This is a reviewed dataset, not an automatic full-exchange filing feed.
+
+When a Zerodha quote is available, official shares × INR quote produces INR market cap, converted to USD for the site's common internal units. Without an official count, the existing dated-cap/price estimate remains marked ≈. No market cap is calculated from traded volume. The market-wide reference sweep now reads NSE issued-share data for all eligible directory ISINs, preferring entries without financial snapshots. The backend refreshes these records daily while running. Reviewed BSE notices are kept separately in `dist/reviewed-shares.json`; initial NSE-on-BSE coverage uses 2,475,000,000 shares, effective 24 September 2026, notice 20260923-39. BSE reference API access is currently unavailable, so remaining BSE-only share counts are pending. Further company coverage and corporate-action updates require verified filings; do not infer the total from IPO offer size or free float.
+
+### Coverage audit and IPO dates
+
+Run `node coverage-audit.mjs` to produce `.local/coverage-audit.json`, with missing market-cap inputs, unmatched snapshot identities and recent IPO source records. `node reference-data.mjs` refreshes official NSE share counts and IPO history. The server also refreshes supplemental IPO calendars daily, joining companies by ISIN after matching their exchange identity, and preserving provenance. Official NSE history and reviewed BSE notices take precedence over broker and IPO Central calendar dates. `[NEW]` and the Rankings-only New listings filter use a rolling three-calendar-month window in Asia/Kolkata. Transfers and secondary listings are not inferred to be IPOs from directory discovery dates.
+
+Logos retain existing source images and use Dhan symbol images as a fallback; broker calendar images are used when present. If an image is unavailable, company initials are shown. This is not a claim of verified logo coverage for every security.

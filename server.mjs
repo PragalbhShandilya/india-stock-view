@@ -4,6 +4,10 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {FeedState} from './feed.mjs';
 import {ListingTracker} from './listings.mjs';
+import {KiteMarket} from './kite.mjs';
+import {syncReferences} from './reference-data.mjs';
+import {syncSupplementalIPOs} from './ipo-calendar.mjs';
+try{process.loadEnvFile('.env')}catch{}
 const root=fileURLToPath(new URL('./dist/',import.meta.url));
 const endpoint=process.env.GFD_WS_URL,key=process.env.GFD_API_KEY;
 const configured=Boolean(endpoint&&key),feed=new FeedState();
@@ -13,7 +17,11 @@ function indexMaster(){registry.clear();for(const listing of master.listings){re
 indexMaster();
 const tracker=new ListingTracker(master,fileURLToPath(new URL('./.local',import.meta.url)),updated=>{master=updated;indexMaster()});
 await tracker.initialize();
+const kite=new KiteMarket(master,fileURLToPath(new URL('./.local',import.meta.url)));
+await kite.initialize();
 // Do not retry every minute: broker masters are daily publications.
+let referenceRunning=false;async function dailyReferences(){if(referenceRunning)return;let state;try{state=JSON.parse(await readFile(new URL('./.local/reference-sync.json',import.meta.url),'utf8'))}catch{}const today=new Date().toISOString().slice(0,10);if(state?.startedAt?.slice(0,10)===today&&state?.state!=='running')return;referenceRunning=true;try{await syncReferences();await syncSupplementalIPOs(master.listings)}catch{console.error('Official share-count refresh unavailable; previous verified records retained.')}finally{referenceRunning=false}}
+const referenceTimer=setInterval(dailyReferences,3600000);setTimeout(dailyReferences,5000);
 const directoryTimer=setInterval(()=>{const now=new Date();const india=new Date(now.getTime()+330*60000);const day=india.toISOString().slice(0,10),minute=india.getUTCHours()*60+india.getUTCMinutes();if(minute>=515&&tracker.state.lastAttempt?.slice(0,10)!==day)tracker.refresh()},60000);
 if(tracker.state.lastAttempt?.slice(0,10)!==new Date().toISOString().slice(0,10))tracker.refresh();
 let ws,reconnect,attempt=0,authTimeout,lastMessage=Date.now();
@@ -50,14 +58,26 @@ const server=http.createServer(async(req,res)=>{
   const host=req.headers.host;if(!host||!['localhost','127.0.0.1'].includes(host.split(':')[0])){res.writeHead(403);res.end();return}
   if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);res.end();return}
   let url;try{url=new URL(req.url,'http://localhost')}catch{res.writeHead(400);res.end();return}
+  if(url.pathname==='/api/kite/login'){
+    if(!kite.available){res.writeHead(503);res.end('Kite is not configured on this server.');return}
+    const login=kite.login();res.setHeader('Set-Cookie','isv_kite_state='+login.state+'; HttpOnly; SameSite=Lax; Path=/api/kite; Max-Age=600');res.writeHead(302,{Location:login.url,'Cache-Control':'no-store'});res.end();return;
+  }
+  if(url.pathname==='/api/kite/callback'){
+    res.setHeader('Cache-Control','no-store');res.setHeader('Referrer-Policy','no-referrer');const state=url.searchParams.get('state'),cookie=req.headers.cookie?.split(';').map(s=>s.trim()).find(s=>s.startsWith('isv_kite_state='))?.split('=')[1];
+    if(!state||state!==cookie){res.writeHead(400);res.end('Login validation failed. Return to IndiaStockView and connect again.');return}
+    try{await kite.authenticate(url.searchParams.get('request_token'),state);res.setHeader('Set-Cookie','isv_kite_state=; HttpOnly; SameSite=Lax; Path=/api/kite; Max-Age=0');res.writeHead(303,{Location:'/#rankings'});res.end()}catch{res.writeHead(401,{'Content-Type':'text/plain'});res.end('Zerodha login could not be completed. Return to IndiaStockView and connect again.')}return;
+  }
+  if(url.pathname==='/api/kite/history'){
+    res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type','application/json');try{res.end(JSON.stringify(await kite.history(url.searchParams.get('token'),url.searchParams.get('range')||'1M')))}catch(error){res.writeHead(kite.state==='login_required'?401:503);res.end(JSON.stringify({error:error.message}))}return;
+  }
   if(url.pathname==='/api/listings'){res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type','application/json');res.end(JSON.stringify(tracker.payload()));return}
   if(url.pathname==='/instruments.json'){res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-cache');res.end(JSON.stringify(master));return}
   if(url.pathname==='/api/market'){
-    res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type','application/json');const payload=feed.payload(configured);payload.listings=master.listings;payload.status.directoryListings=master.listings.length;res.end(JSON.stringify(payload));return;
+    res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type','application/json');const payload=kite.available?kite.payload():feed.payload(configured);if(!kite.available)payload.listings=master.listings;payload.status.directoryListings=master.listings.length;res.end(JSON.stringify(payload));return;
   }
   let name;try{name=decodeURIComponent(url.pathname)}catch{res.writeHead(400);res.end();return}
   const target=path.resolve(root,'.'+(name==='/'?'/index.html':name));if(!target.startsWith(root)){res.writeHead(403);res.end();return}
   try{const bytes=await readFile(target);res.setHeader('Content-Type',types[path.extname(target)]||'application/octet-stream');res.setHeader('Cache-Control','no-cache');res.end(req.method==='HEAD'?undefined:bytes)}catch{res.writeHead(404);res.end('Not found')}
 });
-server.listen(Number(process.env.PORT||4174),'127.0.0.1',()=>console.log(`IndiaStockView: http://127.0.0.1:${server.address().port} · ${configured?'Provider configured':'Snapshot mode; live provider not configured'}`));
-function stop(){clearInterval(directoryTimer);clearInterval(watchdog);clearTimeout(reconnect);clearTimeout(authTimeout);ws?.close();server.close(()=>process.exit())}process.on('SIGINT',stop);process.on('SIGTERM',stop);
+server.listen(Number(process.env.PORT||4174),'127.0.0.1',()=>console.log(`IndiaStockView: http://127.0.0.1:${server.address().port} · ${kite.available?'Zerodha backend configured':configured?'Provider configured':'Snapshot mode; live provider not configured'}`));
+function stop(){kite.disconnect();clearInterval(referenceTimer);clearInterval(directoryTimer);clearInterval(watchdog);clearTimeout(reconnect);clearTimeout(authTimeout);ws?.close();server.close(()=>process.exit())}process.on('SIGINT',stop);process.on('SIGTERM',stop);

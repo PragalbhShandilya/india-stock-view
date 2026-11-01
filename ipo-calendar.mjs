@@ -1,0 +1,23 @@
+import {readFile,writeFile,rename} from 'node:fs/promises';
+import {exchangeDate} from './reference-data.mjs';
+const text=s=>String(s).replace(/<[^>]*>/g,' ').replace(/&amp;/g,'&').replace(/&#8217;|&rsquo;/g,"'").replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
+export const normalizeCompany=s=>text(s).toUpperCase().replace(/\b(LIMITED|LTD|PRIVATE|PVT|THE)\b/g,'').replace(/[^A-Z0-9]/g,'');
+export function matchCompany(name,directory,referenceRecords=[]){
+ const n=normalizeCompany(name),matches=new Map(),referenceNames=new Map();for(const r of referenceRecords){if(!referenceNames.has(r.isin))referenceNames.set(r.isin,[]);referenceNames.get(r.isin).push(r.name)}
+ for(const l of directory){const names=[l.name,...(referenceNames.get(l.isin)||[])];if(normalizeCompany(l.symbol)===n||names.some(name=>{const v=normalizeCompany(name);return v===n||Math.min(v.length,n.length)>=7&&(v.startsWith(n)||n.startsWith(v))||Math.min(v.length,n.length)>=15&&v.slice(0,15)===n.slice(0,15)}))matches.set(l.isin,l)}
+ return matches.size===1?[...matches.values()][0]:null;
+}
+export function parseCalendar(html,source,directory,referenceRecords=[],asOf=new Date().toISOString().slice(0,10)){
+ const rows=[...html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)],records=[],unmatched=[];
+ for(const [,row] of rows){const cells=[...row.matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/g)].map(m=>text(m[1]));if(cells.length<2)continue;const m=cells[1].match(/^(\d{2})-(\d{2})-(\d{4})$/);if(!m)continue;const date=`${m[3]}-${m[1]}-${m[2]}`;if(date>asOf)continue;const listing=matchCompany(cells[0],directory,referenceRecords);if(!listing){unmatched.push({name:cells[0],listingDate:date});continue}records.push({isin:listing.isin,name:cells[0],symbol:listing.symbol,listingDate:date,listingType:'IPO',exchange:listing.exchange,source,sourceTitle:'IPO Central listing calendar',verification:'Calendar-reported listing date; matched to exchange equity ISIN'})}
+ return {records,unmatched};
+}
+export function parseZerodhaCalendar(html,directory,asOf=new Date().toISOString().slice(0,10)){
+ const records=[];for(const [,row] of html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)){const symbol=row.match(/<span class="ipo-symbol">\s*([^<]+)/)?.[1]?.trim(),dates=[...row.matchAll(/<td class="date">([\s\S]*?)<\/td>/g)];if(!symbol||dates.length!==2)continue;const date=exchangeDate(text(dates[1][1]).replace(/ /g,'-'));if(!date||date>asOf)continue;const matches=new Map(directory.filter(l=>l.symbol===symbol).map(l=>[l.isin,l]));if(matches.size!==1)continue;const l=[...matches.values()][0],path=row.match(/href="(\/ipo\/[^\"]+)"/)?.[1],name=text(row.match(/<span class="ipo-name[^\"]*">([\s\S]*?)<\/span>/)?.[1]||l.name),logo=row.match(/<img src="([^\"]+)"/)?.[1];records.push({isin:l.isin,name,symbol,listingDate:date,listingType:'IPO',exchange:l.exchange,source:'https://zerodha.com'+(path||'/ipo/'),sourceTitle:'Zerodha IPO calendar',verification:'Broker listing calendar matched to exchange symbol and ISIN',logo})}return records;
+}
+export async function syncSupplementalIPOs(directory){
+ const references=JSON.parse(await readFile(new URL('./dist/official-shares.json',import.meta.url))).records;let previous={records:[]};try{previous=JSON.parse(await readFile(new URL('./dist/supplemental-ipos.json',import.meta.url)))}catch{}
+ const records=new Map(previous.records.map(r=>[r.isin,r])),unmatched=[],failures=[];
+ const now=new Date(),previousDate=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()-3,1)),years=[...new Set([previousDate.getUTCFullYear(),now.getUTCFullYear()])],sources=[...years.flatMap(year=>['https://ipocentral.in/sme-ipo-'+year+'/','https://ipocentral.in/ipo-'+year+'/']),'https://zerodha.com/ipo/'];for(const source of sources){try{const r=await fetch(source,{signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error();const html=await r.text();if(!html.includes('<tr'))throw Error();const result=source.includes('zerodha.com')?{records:parseZerodhaCalendar(html,directory),unmatched:[]}:parseCalendar(html,source,directory,references);for(const row of result.records)records.set(row.isin,row);unmatched.push(...result.unmatched)}catch{failures.push(source)}}
+ const output={updatedAt:new Date().toISOString(),records:[...records.values()],unmatched,unavailableSources:failures,note:'Calendar-reported IPO dates supplement official exchange history. Share counts are sourced independently from official exchange records.'};const file=new URL('./dist/supplemental-ipos.json',import.meta.url);await writeFile(new URL('./dist/supplemental-ipos.json.tmp',import.meta.url),JSON.stringify(output));await rename(new URL('./dist/supplemental-ipos.json.tmp',import.meta.url),file);return output;
+}
