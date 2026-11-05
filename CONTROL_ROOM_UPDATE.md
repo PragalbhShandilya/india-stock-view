@@ -1,21 +1,16 @@
 # IndiaStockView — control room update
 
-Updated 1 November 2026. Documentation milestone; no release-readiness claim.
+Updated 2 November 2026. Local work continues; the all-aspects ≥9/10 goal is not achieved.
 
-| Area | Current state |
+| Area | Current evidence |
 |---|---|
-| Website | Rankings, company pages, charts, comparisons, watchlists and currency display implemented |
-| Publication | GitHub Pages workflow exists; latest deployed revision not verified in this pass |
-| Live backend | Kite and GFD adapters exist; real provider access not verified in this pass |
-| Directory | Daily local discovery implemented; coverage not certified exhaustive |
-| Official reference | NSE refresh and reviewed share records exist; BSE-only coverage incomplete |
-| IPOs | Official/supplemental records and rolling three-month filter implemented |
-| Tests | Prior chart review records 37 passing; fresh rerun unavailable because Node/npm absent on PATH |
-| Visual acceptance | Latest mobile market-map and export checks remain open per chart review |
-| Documentation | Orbit-style setup, quality, testing, deployment and handoff set added; indexed in DOCUMENTATION.md |
+| Website | Rankings, multi-metric columns, company entry pages, stock/index charts, comparisons, market map and watchlists |
+| Publication | GitHub updates/publication explicitly paused; do not infer the public site matches local changes |
+| Runtime | Node v24.22.1 bundled with this workspace verified; local preview uses port 4174 |
+| Provider | Local Zerodha responses verified for all seven 1M index histories and two 5Y index histories; session/freshness must be checked when used |
+| Coverage | Reference audit: 5,653 matched identities and 25 unresolved rows; share/financial coverage incomplete, particularly BSE-only inputs |
+| Verification | Run npm run check; latest dated test counts and limits are in TEST_REPORT.md and WEBSITE_QUALITY_REVIEW.md |
+| Browser | Supported computer/browser tool available again on 3 November; rankings preview opened visibly. Broader visual/mobile/export acceptance remains open |
+| Security | Loopback-only broker server, guarded browser API origin, private sessions; no public multi-user hosting claim |
 
-## Next actions
-
-Restore a usable Node runtime and reproduce the suite. Finish pending rendered chart/export checks. Validate the intended provider with an entitled account before claiming live coverage. Confirm the published revision independently. Keep static-site capability distinct from local-server capability.
-
-No credentials were requested/read, no purchase was made, no public deployment was triggered and no production broker result is claimed by this documentation pass.
+Next work: resolve the remaining data and rendered acceptance gaps, preserve exact/estimated/missing valuation distinctions, and keep new features consistent across stock/index, currency and accessibility paths. No rating should rise merely because the test count increases. The current scorecard owns all aspect ratings.

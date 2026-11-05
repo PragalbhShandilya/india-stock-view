@@ -1,0 +1,14 @@
+import {verifyPublicPages} from '../build-public-pages.mjs';
+import {verifyAssetVersions} from './version-assets.mjs';
+import {readdir} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {execFileSync} from 'node:child_process';
+await verifyAssetVersions();
+await verifyPublicPages();
+const root=fileURLToPath(new URL('../',import.meta.url));
+const files=(await readdir(new URL('../dist/',import.meta.url))).filter(name=>name.endsWith('.js')).sort();
+for(const name of files)execFileSync(process.execPath,['--check','dist/'+name],{cwd:root,stdio:'inherit'});
+for(const name of (await readdir(root)).filter(name=>name.endsWith('.mjs')&&!name.endsWith('.test.mjs')).sort())execFileSync(process.execPath,['--check',name],{cwd:root,stdio:'inherit'});
+console.log(files.length+' browser scripts and all root server modules passed syntax checks.');
+const tests=(await readdir(root)).filter(name=>name.endsWith('.test.mjs')).sort();
+execFileSync(process.execPath,['--test',...tests],{cwd:root,stdio:'inherit'});

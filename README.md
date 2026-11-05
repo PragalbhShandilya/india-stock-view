@@ -12,7 +12,7 @@ See [DOCUMENTATION.md](DOCUMENTATION.md) for the full project documentation, set
 - Sortable financial rankings with rank movement comparisons
 - USD and INR display, including Indian number abbreviations
 - Market-cap treemap, revenue/profit scatter plots, and sector breakdowns
-- Comparison overlays and available annual company history
+- Stock/index comparison overlays, index chart pages and available annual company history
 - Browser-local watchlists and comparisons
 - PNG/SVG chart downloads and ranking CSV exports
 - Official NSE/BSE closing-price CSV import
@@ -20,13 +20,15 @@ See [DOCUMENTATION.md](DOCUMENTATION.md) for the full project documentation, set
 
 ## Public website
 
+GitHub updates and publication are currently paused at the user’s request. Continue local work until publication is explicitly resumed.
+
 The `Deploy website to GitHub Pages` workflow publishes `dist/` after changes to `main`. In repository **Settings → Pages**, select **GitHub Actions** as the source.
 
 GitHub Pages hosts the static snapshot website. It does not run the local Node server, live-market feed bridge, or daily directory updater. No broker credentials are included or required for the public preview. Report imports and preferences stay in each visitor's browser.
 
 ## Run locally
 
-Requires Node.js 22 or later. No package installation is needed.
+Requires Node.js 22 or later (Node 24 is used by the Pages workflow). No package installation is needed.
 
 ```sh
 npm start
@@ -35,7 +37,8 @@ npm start
 Open http://127.0.0.1:4174/. Optional server-only feed configuration is documented in `.env.example`; never place API secrets in `dist/`.
 
 ```sh
-npm test
+npm run version:assets
+npm run check
 ```
 
 ## Data and accuracy
@@ -46,7 +49,9 @@ Prices and market caps are dated source values. Revenue and pretax earnings were
 
 Some reference prices are overseas depositary-receipt quotes. Their identities are retained. Currency conversion uses a dated ExchangeRate-API reference rate, not intraday FX. Attribution is displayed when INR conversion is used.
 
-The 30-day trend graphics contain independently normalized relative shapes, not dated historical prices or percentage returns. Approximate date markers are labeled accordingly. Annual market-cap history is available only for selected companies; unsupported time ranges are disabled.
+Ranking 30-day trends use actual Zerodha observations within a common 30-calendar-day IST window, clipped to verified IPO dates. Short listing histories occupy only their available day share of the width; missing history stays blank. Stock/index charts support the configured daily/intraday timelines; 5Y/MAX plot the last shared observation per week with calendar-year axes. Index levels remain points in either display currency. Annual market-cap history remains annual and is available only for selected companies.
+
+Direct company/section entry documents are generated from verified identities. Run `npm run build:pages` after directory or metadata changes; asset versioning also rebuilds existing entries. Older hash bookmarks still work. See [DEPLOYMENT.md](DEPLOYMENT.md) for generated-page and hosting details.
 
 ## Official exchange report imports
 
@@ -57,7 +62,7 @@ In **Data sources**, select an official Capital Market/Equity **UDiFF Common Bha
 
 Unzip reports before import. The importer validates schema, dates, ISIN and price fields, then matches the directory by ISIN, exchange and series. Imported closing prices are separate from existing financials and historical charts. Unmatched prices remain unavailable. Reports persist only in the importing browser, and the data panel can restore the original dataset.
 
-No official exchange report is bundled or automatically loaded. Automated archive downloads could not be verified. No paid live-feed subscription is connected.
+No official exchange report is bundled or automatically loaded. Automated archive downloads could not be verified. Broker quote/history access depends on the local authenticated session and provider permissions; it is separate from official closing-report imports.
 
 ## Attribution
 

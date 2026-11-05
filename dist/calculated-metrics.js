@@ -1,0 +1,13 @@
+function applyDerivedMetrics(rows,coverage={}){
+ const revenueTTM=/TTM/i.test(coverage.revenue?.note||''),alignedTTM=revenueTTM&&/TTM/i.test(coverage.earnings?.note||'')&&coverage.revenue?.retrievedAt&&coverage.revenue.retrievedAt===coverage.earnings?.retrievedAt;
+ for(const s of rows){for(const [key,record]of Object.entries(s.derivedMetrics||{}))if(s[key]===record.value)s[key]=null;s.derivedMetrics={};
+  const derive=(key,value,formula,note)=>{if(s[key]==null&&Number.isFinite(value)){s[key]=value;s.derivedMetrics[key]={value,formula,note}}};
+  if(s.isin&&revenueTTM&&Number.isFinite(s.cap)&&s.cap>0&&Number.isFinite(s.revenue)&&s.revenue>0)derive('ps',s.cap/s.revenue,'Market cap / TTM revenue','Approximate ratio from current valuation and dated USD financial figures; revenue retrieved '+(coverage.revenue?.retrievedAt||'date unavailable')+'.');
+  if(s.isin&&alignedTTM&&Number.isFinite(s.earnings)&&Number.isFinite(s.revenue)&&s.revenue>0)derive('pretaxMargin',s.earnings/s.revenue*100,'Pretax earnings / TTM revenue × 100','Source-based pretax margin; financials retrieved '+coverage.revenue.retrievedAt+'.');
+  if(Number.isFinite(s.verifiedSharesOutstanding)&&s.verifiedSharesOutstanding>0)s.shares=s.verifiedSharesOutstanding;
+  if(s.turnover==null&&s.liveSource&&Number.isFinite(s.volume)&&s.volume>=0&&Number.isFinite(s.averagePriceINR)&&s.averagePriceINR>0)derive('turnover',s.volume*s.averagePriceINR,'Traded volume × average traded price','Native INR traded value from Zerodha quote fields.');
+ }
+ return rows;
+}
+function metricValue(stock,key){const value=amount(stock[key],key),derived=stock.derivedMetrics?.[key];if(stock.shareCountConflict&&['cap','shares'].includes(key))return `<span title="${escapeHtml('Conflicting official share counts as of '+stock.shareCountConflict.date+'; exact market cap and outstanding shares are unavailable. Any displayed market cap is the dated financial-source value.')}">${key==='shares'?'—':value}</span>`;if(key==='cap'&&Number.isFinite(stock.cap)&&stock.liveCapEstimated)return `<span class="derived-value estimated-cap" title="${escapeHtml(stock.liveCapBasis||'Price-scaled estimate from dated market cap and price; not adjusted for share-count changes')}">≈ ${value}</span>`;return derived?`<span class="derived-value" title="${escapeHtml(derived.formula+' · '+derived.note)}">≈ ${value}</span>`:value}
+if(typeof metrics!=='undefined'){metrics.pretaxMargin='Pretax margin';companyMetricDetails.pretaxMargin=['Pretax margin','Pretax earnings divided by TTM revenue. Calculated from the available source financials; this differs from operating margin.'];paths.pretaxMargin='earnings'}

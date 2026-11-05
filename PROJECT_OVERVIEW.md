@@ -1,6 +1,6 @@
 # IndiaStockView — project overview
 
-Updated 1 November 2026.
+Updated 2 November 2026.
 
 ## Product
 
@@ -11,7 +11,7 @@ IndiaStockView helps visitors explore Indian companies through rankings, profile
 - Reference financial rankings plus an NSE/BSE equity directory, consolidated by matched ISIN.
 - Search, filters, sorting, 100-row pages and ranking movement comparisons.
 - Individual bookmarkable company pages, financial tabs and available annual history.
-- Interactive price/comparison charts, market map, scatter plots and sector views.
+- Interactive stock/index price comparisons, index pages, market maps, scatter plots and sector views.
 - Browser-local watchlists, comparisons, currency choice and exchange-report imports.
 - INR/USD display, daily reference FX and source-aware valuation.
 - Verified IPO-date records and a rolling three-calendar-month New listings filter.
@@ -20,7 +20,7 @@ IndiaStockView helps visitors explore Indian companies through rankings, profile
 
 ## Product boundaries
 
-The directory is broader than financial coverage. A known listing does not guarantee a price, a financial metric, a share count or a verified logo. Snapshot financials, official closing reports and live quotes have different dates and provenance. Missing observations must remain missing; normalized trend shapes are not price histories.
+The directory is broader than financial coverage. A known listing does not guarantee a price, a financial metric, a share count or a verified logo. Snapshot financials, official closing reports and live quotes have different dates and provenance. Missing observations remain missing. Ranking trends use actual dated broker prices; legacy illustrative shapes are excluded. Indices stay separate from company ranks and their levels are not converted to currency.
 
 No user-account system, cross-device watchlist sync, native mobile application, billing or production multi-user broker service is implemented. Mobile web acceptance is separate from native app support.
 

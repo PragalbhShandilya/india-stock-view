@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-01",
+  "updatedAt": "2026-11-02",
   "records": [
     {
       "isin": "INE721I01024",
@@ -12,7 +12,15 @@
       "listingType": "IPO",
       "source": "https://www.bseindia.com/downloads/UploadDocs/Notices/20260923-39/20260923-39.pdf",
       "sourceTitle": "BSE listing notice 20260923-39",
-      "basis": "Fully paid ordinary equity shares admitted to listing"
+      "basis": "Fully paid ordinary equity shares admitted to listing",
+      "referencePriceINR": 1776.2,
+      "referencePriceDate": "2026-11-02",
+      "referencePriceAt": "2026-11-02T13:34:00+05:30",
+      "referencePriceSource": "https://www.business-standard.com/markets/national-stock-exchange-of-india-ltd-share-price-21241.html",
+      "referencePriceExchange": "BSE",
+      "referencePriceSymbol": "NSE",
+      "referenceChangePercent": -0.33,
+      "referenceVolume": 1156778
     }
   ]
 }

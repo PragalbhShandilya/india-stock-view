@@ -1,0 +1,33 @@
+import {readFile,writeFile,rename,mkdir} from 'node:fs/promises';
+import path from 'node:path';
+export const indiaDay=(now=new Date())=>new Date(now.getTime()+330*60000).toISOString().slice(0,10);
+export function trendWindowStart(now=new Date()){const date=new Date(indiaDay(now)+'T00:00:00Z');date.setUTCDate(date.getUTCDate()-29);return date.toISOString().slice(0,10)}
+export function normalizeTrendHistory(history,entry,{now=new Date(),listingDate=null}={}){
+ if(history?.provider!=='Zerodha Kite'||history.currency!=='INR'||!Array.isArray(history.points))throw Error('Invalid Zerodha history');
+ const day=indiaDay(now),windowStart=trendWindowStart(now),listed=/^\d{4}-\d{2}-\d{2}$/.test(listingDate||'')&&listingDate<=day?listingDate:null,from=listed&&listed>windowStart?listed:windowStart,byDate=new Map();
+ for(const point of history.points){const date=typeof point.time==='string'?point.time.slice(0,10):'';if(/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(point.time))&&date>=from&&date<=day&&Number.isFinite(point.price)&&point.price>0)byDate.set(date,{date,price:point.price})}
+ const points=[...byDate.values()].sort((a,b)=>a.date.localeCompare(b.date));
+ return {isin:entry.isin,provider:'Zerodha Kite',currency:'INR',exchange:entry.exchange,symbol:entry.symbol,instrumentToken:entry.instrumentToken,windowStart,listingDate:listed,asOf:now.toISOString(),day,state:points.length?'ready':'unavailable',points};
+}
+export class ZerodhaTrends{
+ constructor(kite,folder,{listingDates=new Map(),now=()=>new Date()}={}){this.kite=kite;this.folder=folder;this.listingDates=listingDates;this.now=now;this.records=new Map();this.priority=new Set();this.retryAt=new Map();this.running=false;this.stopped=false;this.timer=null;this.blockedSession=null;this.current=null;this.dirty=0;this.pauseUntil=0}
+ entries(){const map=new Map();for(const entry of this.kite.registry.values())if(entry.isin&&(!map.has(entry.isin)||entry.exchange==='NSE'))map.set(entry.isin,entry);return map}
+ fresh(record,entry){return record?.day===indiaDay(this.now())&&record.instrumentToken===entry.instrumentToken&&record.exchange===entry.exchange}
+ async initialize(){await mkdir(this.folder,{recursive:true});try{const data=JSON.parse(await readFile(path.join(this.folder,'zerodha-trends.json'),'utf8'));for(const r of data.records||[])if(r.provider==='Zerodha Kite'&&typeof r.isin==='string'&&Array.isArray(r.points))this.records.set(r.isin,r)}catch{}this.timer=setInterval(()=>this.run(),1000);this.run()}
+ prioritize(isins){const entries=this.entries();for(const isin of isins)if(entries.has(isin)&&!this.fresh(this.records.get(isin),entries.get(isin)))this.priority.add(isin);this.run()}
+ status(){const entries=this.entries(),records=[...entries].map(([isin,e])=>this.fresh(this.records.get(isin),e)?this.records.get(isin):null),checked=records.filter(Boolean).length;return {provider:'Zerodha Kite',state:this.blockedSession===this.kite.accessToken&&this.blockedSession?'history_access_required':!this.kite.accessToken||this.kite.state==='login_required'?'login_required':this.running?'loading':checked===entries.size?'complete':'waiting',eligible:entries.size,checked,available:records.filter(r=>r?.state==='ready').length,unavailable:records.filter(r=>r?.state==='unavailable').length,current:this.current,day:indiaDay(this.now())}}
+ payload(isins){const entries=this.entries(),returns={};this.prioritize(isins);
+ for(const [isin,entry]of entries){const record=this.records.get(isin);if(record?.state!=='ready'||record.instrumentToken!==entry.instrumentToken||record.exchange!==entry.exchange)continue;const points=new Map(record.points.filter(p=>p.date>=trendWindowStart(this.now())&&p.date<=indiaDay(this.now())).map(p=>[p.date,p.price])),quote=this.kite.quotes?.get(entry.exchange+':'+entry.symbol),date=Number.isFinite(Date.parse(quote?.lastTrade||''))?indiaDay(new Date(quote.lastTrade)):null,last=[...points.keys()].sort().at(-1);if(date&&date>=trendWindowStart(this.now())&&date<=indiaDay(this.now())&&(!last||date>=last)&&Number.isFinite(quote.price)&&quote.price>0)points.set(date,quote.price);const values=[...points].sort((a,b)=>a[0].localeCompare(b[0])).map(p=>p[1]);returns[isin]=values.length>1?(values.at(-1)/values[0]-1)*100:null}
+ return {status:this.status(),returns,records:isins.map(isin=>{const entry=entries.get(isin),r=this.records.get(isin);if(!entry)return {isin,state:'unsupported',provider:'Zerodha Kite',points:[]};if(r&&r.instrumentToken===entry.instrumentToken&&r.exchange===entry.exchange)return {...r,stale:!this.fresh(r,entry)};return {isin,state:this.blockedSession===this.kite.accessToken&&this.blockedSession?'history_access_required':!this.kite.accessToken||this.kite.state==='login_required'?'login_required':this.retryAt.get(isin)>Date.now()?'unavailable':'pending',provider:'Zerodha Kite',points:[]}})}}
+ async persist(){if(!this.dirty)return;const file=path.join(this.folder,'zerodha-trends.json'),temp=file+'.tmp';await writeFile(temp,JSON.stringify({provider:'Zerodha Kite',updatedAt:this.now().toISOString(),records:[...this.records.values()]}),{mode:0o600});await rename(temp,file);this.dirty=0}
+ async run(){if(this.running||this.stopped||!this.kite.accessToken||this.kite.state==='login_required'||this.blockedSession===this.kite.accessToken||Date.now()<this.pauseUntil)return;this.running=true;
+ try{while(!this.stopped&&this.kite.accessToken&&this.kite.state!=='login_required'){
+  const entries=this.entries(),pending=isin=>{const e=entries.get(isin);return e&&!this.fresh(this.records.get(isin),e)&&!(this.retryAt.get(isin)>Date.now())};
+  const isin=[...this.priority].find(pending)||[...entries.keys()].find(pending);if(!isin)break;this.priority.delete(isin);const entry=entries.get(isin);this.current=isin;
+  try{const history=await this.kite.history(entry.instrumentToken,'30D',null,{background:true});this.records.set(isin,normalizeTrendHistory(history,entry,{now:this.now(),listingDate:this.listingDates.get(isin)}));this.retryAt.delete(isin);this.dirty++;if(this.dirty>=20)await this.persist()}
+  catch{this.retryAt.set(isin,Date.now()+600000);if(this.kite.state==='login_required'){this.blockedSession=this.kite.accessToken;break}this.pauseUntil=Date.now()+3000;break}
+  // Queue only one background history at a time, leaving foreground charts able to interleave.
+  await new Promise(resolve=>setTimeout(resolve,20));
+ }}finally{this.current=null;await this.persist().catch(()=>{});this.running=false}}
+ async stop(){this.stopped=true;clearInterval(this.timer);while(this.running)await new Promise(resolve=>setTimeout(resolve,20));await this.persist().catch(()=>{})}
+}

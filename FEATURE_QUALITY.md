@@ -1,6 +1,6 @@
 # Feature quality register
 
-Updated 1 November 2026. Evidence register adapted from Orbit. No new numeric scores are assigned without a fresh acceptance pass. Existing chart aspect scores remain in CHART_QUALITY_REVIEW.md.
+Baseline feature register from 1 November 2026. For current per-iteration ratings and later evidence use [WEBSITE_QUALITY_REVIEW.md](WEBSITE_QUALITY_REVIEW.md) and [TEST_REPORT.md](TEST_REPORT.md). The rows below identify the original acceptance scope; later fixes do not imply every remaining manual check passed.
 
 | Feature | Current evidence | Remaining acceptance |
 |---|---|---|

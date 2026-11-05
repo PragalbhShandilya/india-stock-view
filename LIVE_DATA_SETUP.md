@@ -1,6 +1,6 @@
 # Live data setup
 
-Updated 1 November 2026. Provider code exists; this documentation task did not verify credentials, entitlements or live market coverage.
+Updated 2 November 2026. Actual local Zerodha quotes/history were verified in earlier iterations; all seven index 1M histories and two 5Y index histories were checked on 2 November. This is dated evidence, not a guarantee that a session remains authenticated or that every listing is live. See TEST_REPORT.md for scope.
 
 ## Zerodha Kite
 

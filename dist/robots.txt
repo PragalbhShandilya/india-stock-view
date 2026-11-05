@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /india-stock-view/api/
+Sitemap: https://pragalbhshandilya.github.io/india-stock-view/sitemap.xml

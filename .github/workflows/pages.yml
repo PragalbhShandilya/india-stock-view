@@ -18,10 +18,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Build public entry pages
+        run: npm run build:pages
       - name: Check application
-        run: |
-          node --check dist/app.js
-          node --test feed.test.mjs listings.test.mjs exchange-eod.test.mjs kite.test.mjs reference-data.test.mjs ipo-calendar.test.mjs chart-core.test.mjs
+        run: npm run check
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

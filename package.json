@@ -4,8 +4,12 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test feed.test.mjs listings.test.mjs exchange-eod.test.mjs kite.test.mjs reference-data.test.mjs ipo-calendar.test.mjs chart-core.test.mjs",
-    "refresh:reference": "node reference-data.mjs"
+    "test": "node --test feed.test.mjs listings.test.mjs exchange-eod.test.mjs kite.test.mjs reference-data.test.mjs ipo-calendar.test.mjs chart-core.test.mjs ui-utils.test.mjs http-response.test.mjs page-metadata.test.mjs data-loader.test.mjs zerodha-trends.test.mjs calculated-metrics.test.mjs history-queue.test.mjs static-files.test.mjs ranking-interaction.test.mjs market-ticker.test.mjs request-policy.test.mjs chart-motion.test.mjs market-deltas.test.mjs public-pages.test.mjs chart-accessibility.test.mjs chart-export.test.mjs documentation.test.mjs",
+    "build:pages": "node build-public-pages.mjs",
+    "refresh:nifty50": "node refresh-nifty50.mjs",
+    "refresh:reference": "node reference-data.mjs",
+    "check": "node scripts/check.mjs",
+    "version:assets": "node scripts/version-assets.mjs"
   },
   "engines": {
     "node": ">=22"

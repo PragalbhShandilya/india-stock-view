@@ -1,17 +1,17 @@
-# Roadmap
+# Remaining acceptance roadmap
 
-Updated 1 November 2026. Proposed priorities, not completion claims or scheduled commitments.
+Updated 2 November 2026. Current goals, not scheduled commitments.
 
-| Priority | Work | Done when |
+| Priority | Work | Acceptance evidence |
 |---|---|---|
-| P0 | Reproduce automated verification | Node 22+ suite and syntax checks run with saved results |
-| P0 | Finish latest chart acceptance | Mobile map and PNG/SVG output rendered; pending chart aspects resolved |
-| P0 | Validate selected live provider | Real entitled login, timestamped NSE/BSE examples, session/reconnect checks |
-| P1 | Improve verified share coverage | Additional BSE-only records have dated official provenance and corporate-action handling |
-| P1 | Audit data consistency | Coverage report reviewed; identity, missingness and mixed-period limits visible |
-| P1 | Complete accessibility/responsive review | Keyboard, focus, reduced motion and narrow layouts pass manual acceptance |
-| P1 | Verify public release | Intended revision deployed and public smoke check recorded |
-| P2 | Design public live hosting if needed | Provider rights, hosting model, session isolation and operational ownership agreed |
-| P2 | Improve discovery latency if needed | Official notice ingestion is verified; announcements distinguished from directory first-seen dates |
+| P0 | Current rendered/mobile review | Actual current ticker, ranking, compare, stock/index charts and market map inspected at narrow/desktop sizes |
+| P0 | Downloaded-image review | Real PNG/SVG downloads opened and checked for labels, units, bounds, legends and interaction-free output |
+| P0 | Accessibility acceptance | Real keyboard focus/order, screen-reader announcements, reduced-motion and touch gestures verified |
+| P1 | Data coverage and identity | Remaining source identities resolved with evidence; BSE-only outstanding-share inputs have dated official provenance |
+| P1 | Broader provider recovery | Actual expired-session/reconnect and outage paths verified without exposing credentials; unchanged API success cannot certify them |
+| P1 | Browser performance | Current cold/warm chart loading, rendering and mobile interaction profiled; compare against existing transfer evidence |
+| P1 | Route/sharing acceptance | Real back/reload navigation and social previews checked for clean company paths and legacy bookmarks |
+| Deferred | Public release | Resume only when the user authorizes GitHub updates; then verify intended revision and deployed result |
+| Separate scope | Public live hosting | Access control, provider permissions, account isolation, transport and operational ownership designed before exposure |
 
-Avoid expanding the feature list before current data and acceptance gaps are resolved. Preserve missing-value states rather than manufacturing coverage. Native mobile apps, payment plans and user accounts are outside the implemented scope and need separate product decisions.
+Automated syntax, asset/generation and regression verification is implemented and rerun each iteration; it is not a replacement for the open checks above. The authoritative per-aspect ratings remain in WEBSITE_QUALITY_REVIEW.md. No native app, billing, public broker service or user-account expansion is implied by this roadmap.
